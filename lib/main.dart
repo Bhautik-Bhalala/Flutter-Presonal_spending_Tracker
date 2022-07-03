@@ -57,6 +57,8 @@ class _MyHomePageState extends State<MyHomePage> {
       date: DateTime.now(),
     ),
   ];
+  bool _showChart = false;
+
   List<Transaction> get _recentTransaction {
     return _userTransaction.where((tx) {
       return tx.date.isAfter(
@@ -67,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
   }
 
-  void _addNewTransaction(String title1, double amount1 , DateTime chosenDate ) {
+  void _addNewTransaction(String title1, double amount1, DateTime chosenDate) {
     final newtx = Transaction(
       title: title1,
       amount: amount1,
@@ -78,14 +80,14 @@ class _MyHomePageState extends State<MyHomePage> {
       _userTransaction.add(newtx);
     });
   }
-  void _deletetransaction( String id) {
+
+  void _deletetransaction(String id) {
     setState(() {
-      _userTransaction.removeWhere((element){
+      _userTransaction.removeWhere((element) {
         return element.id == id;
       });
     });
   }
-
 
   void _startAddNewTransaction(BuildContext ctx) {
     showModalBottomSheet(
@@ -97,24 +99,66 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final _islandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    final qweappbar = AppBar(
+      // backgroundColor: /,
+      title: Text("MY Personal Expence App"),
+      actions: <Widget>[
+        IconButton(
+          onPressed: () => _startAddNewTransaction(context),
+          icon: Icon(Icons.star),
+        ),
+      ],
+    );
+    final listall = Container(
+      height: (MediaQuery.of(context).size.height -
+              qweappbar.preferredSize.height -
+              MediaQuery.of(context).padding.top) *
+          0.7,
+      child: TransactionList(_userTransaction, _deletetransaction),
+    );
     return Scaffold(
-      appBar: AppBar(
-        // backgroundColor: /,
-        title: Text("MY Personal Expence App"),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () => _startAddNewTransaction(context),
-            icon: Icon(Icons.star),
-          ),
-        ],
-      ),
+      appBar: qweappbar,
       body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          // mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Chart(_recentTransaction),
-            TransactionList(_userTransaction , _deletetransaction),
+            if (_islandscape)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text('Show Chart'),
+                  Switch(
+                    value: _showChart,
+                    onChanged: (val) {
+                      setState(() {
+                        _showChart = val;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            if (!_islandscape)
+              Container(
+                height: (MediaQuery.of(context).size.height -
+                        qweappbar.preferredSize.height -
+                        MediaQuery.of(context).padding.top) *
+                    0.3,
+                child: Chart(_recentTransaction),
+              ),
+            if (!_islandscape) listall,
+            if (_islandscape)
+              _showChart
+                  ? Container(
+                      height: (MediaQuery.of(context).size.height -
+                              qweappbar.preferredSize.height -
+                              MediaQuery.of(context).padding.top) *
+                          0.3,
+                      child: Chart(_recentTransaction),
+                    )
+                  : listall,
             // UserTransaction(),
           ],
         ),
