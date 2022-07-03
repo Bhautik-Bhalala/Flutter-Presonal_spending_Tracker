@@ -23,7 +23,7 @@ class TransactionList extends StatelessWidget {
         : ListView.builder(
             itemBuilder: (ctx, index) {
               return Card(
-                margin: EdgeInsets.symmetric(vertical: 8,horizontal: 5),
+                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
                 elevation: 5,
                 child: ListTile(
                   leading: CircleAvatar(
@@ -31,24 +31,29 @@ class TransactionList extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: FittedBox(
-                          child: Text('\$${transactions[index].amount}'),
+                        child: Text('\$${transactions[index].amount}'),
                       ),
                     ),
                   ),
                   title: Text(
                     transactions[index].title,
-                    style:  Theme.of(context).textTheme.titleLarge,
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  subtitle:Text(
+                  subtitle: Text(
                     DateFormat.yMMMd().format(transactions[index].date),
                     // style:  Theme.of(context).textTheme.titleSmall,
                   ),
-                  trailing:  IconButton(
-                    icon: Icon(Icons.delete),
-                        color: Theme.of(context).errorColor,
-                        onPressed:() => deletetx(transactions[index].id),
-                  ),
-
+                  trailing: MediaQuery.of(context).size.width > 450
+                      ? FlatButton.icon(
+                          icon: Icon(Icons.delete),
+                          label: Text('Delete'),
+                          onPressed: () => deletetx(transactions[index].id),
+                        )
+                      : IconButton(
+                          icon: Icon(Icons.delete),
+                          color: Theme.of(context).errorColor,
+                          onPressed: () => deletetx(transactions[index].id),
+                        ),
                 ),
               );
             },
